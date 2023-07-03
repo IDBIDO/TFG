@@ -4,7 +4,7 @@ https://join.slack.com/t/conrado-martinez/shared_invite/zt-1ym3v0c4x-7ONL2Gs0A5M
 Papers pySAD:
 https://www.andrew.cmu.edu/user/yuezhao2/papers/22-neurips-adbench.pdf
 
-Algo de latex:
+latex:
 https://www.overleaf.com/
 
 Trello:

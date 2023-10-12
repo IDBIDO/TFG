@@ -1,0 +1,27 @@
+{
+
+  "dependencies": {
+  },
+
+  "comment_1": "item probability function, zipf, uniform. Param: zipf alpha",
+  "prob_func": "zipf",
+  "zipf_alpha": 1.5,
+
+
+  "item_num": 1000,
+  "comment_2": "item_num/data stream size",
+  "item_proportion": 0.001,
+
+
+  "normal": {
+    "comment_3": "normal distribution, param: mean, std",
+    "mean": [],
+    "std": 1
+  },
+
+
+
+
+
+
+}

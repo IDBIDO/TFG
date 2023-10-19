@@ -8,18 +8,16 @@
   "zipf_alpha": 1.5,
 
 
-  "item_num": 1000,
+  "item_num": 30,
   "comment_2": "item_num/data stream size",
   "item_proportion": 0.001,
 
+    "comment_3": "normal, poisson, exponential",
+  "distribution": ["normal"],
 
-  "normal": {
-    "comment_3": "normal distribution, param: mean, std",
-    "mean": [],
-    "std": 1
-  },
-
-
+  "normal_mean": [0, 1000],
+  "normal_std": [1, 100],
+  "outlier_threshold": 2
 
 
 

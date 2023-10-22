@@ -98,7 +98,7 @@ class Generator:
     @staticmethod
     def read_config():
         # Open the JSON file in read mode
-        with open('../../config/generator_config.json', 'r') as json_file:
+        with open('../../config/generator_config_old.json', 'r') as json_file:
             # Read JSON data from the file
             data = json.load(json_file)
 

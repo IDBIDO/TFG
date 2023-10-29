@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.special import rel_entr
 
 
+
 # # generate a normal distribution with mean and std
 def normal_distribution(mean, std, size):
     return np.random.normal(mean, std, size)
@@ -36,3 +37,5 @@ def kl_divergence(a, b):
 print(kl_divergence(normal, normal2))
 
 print('KL-divergence(box_1 || box_2): %.3f ' % sum(rel_entr(normal, normal2)))
+
+

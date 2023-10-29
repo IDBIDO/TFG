@@ -8,7 +8,7 @@ class GenConfig:
 
 
     def print(self):
-        print()
+        print(self.data)
 
     @staticmethod
     def read_config():
@@ -23,3 +23,5 @@ class GenConfig:
         # print(data.get("zipf_alpha"))
         return data
 
+a = GenConfig()
+a.print()

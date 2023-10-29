@@ -1,6 +1,3 @@
-import csv
-
-from matplotlib import pyplot as plt
 
 import mdcgenpy
 
@@ -13,7 +10,7 @@ cluster_gen = mdcgenpy.clusters.ClusterGenerator()
 # Get tuple with a numpy array with samples and another with labels
 data = cluster_gen.generate_data()
 
-configGen = mdcgenpy.interface.json_processing.get_cluster_generator('mdc.json')
+configGen = mdcgenpy.interface.json_processing.get_cluster_generator('../config/mdcgenpy_config.json')
 # data1 is a generator
 data1 = configGen.generate_data()
 
@@ -26,5 +23,5 @@ data1 = configGen.generate_data()
 # print(datax)
 
 # Save the data to the CSV file
-df = mdcgenpy.saveData.saveCSV(data1, "float_data.csv")
+df = mdcgenpy.mdcgenutils.save_csv(data1, "float_data.csv")
 print(df)

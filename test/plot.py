@@ -1,7 +1,7 @@
-import mdcgenpy as mdc
+from src import mdcgenpy as mdc
 import matplotlib.pyplot as plt
 
-data = mdc.mdcgenutils.read_labeled_data('float_data.csv')
+data = mdc.mdcgenutils.read_data_and_label('float_data.csv')
 print(data)
 print(data["Attribute1"])
 data_row0 = data.iloc[0]

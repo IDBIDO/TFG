@@ -127,6 +127,7 @@ def generate_clusters(clus_cfg, batch_size = 0):
 
     if batch_size == 0:
         batch_size = clus_cfg.n_samples
+    print(f'batch_size: {batch_size}')
     for batch in range(((clus_cfg.n_samples - 1) // batch_size) + 1):
         n_samples = min(batch_size, clus_cfg.n_samples - batch * batch_size)
         data, labels = compute_batch(clus_cfg, n_samples)
@@ -157,6 +158,8 @@ def compute_batch(clus_cfg, n_samples):
     mass = clus_cfg.mass
     mass = np.insert(mass, 0, clus_cfg.outliers)  # class 0 is now the outliers (this changes to -1 further down)
     mass /= mass.sum()
+    #labels = np.arange(clus_cfg.n_clusters)
+    #labels = np.tile(labels, n_samples // clus_cfg.n_clusters)[:n_samples]
 
     labels = np.random.choice(clus_cfg.n_clusters + 1, n_samples, p=mass) - 1
     # label -1 corresponds to outliers
@@ -181,6 +184,8 @@ def compute_batch(clus_cfg, n_samples):
         # add noisy variables
         for d in cluster.n_noise:
             data[indexes, d] = np.random.rand(samples)
+
+
 
     # generate outliers
     indexes = (labels == -1)

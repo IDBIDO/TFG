@@ -1,18 +1,21 @@
 {
-    "seed": 12345,
-    "n_samples": 3000,
+    "seed": 1234,
+    "n_samples": 100000,
     "n_feats": 2,
-    "k": 3,
-    "possible_distributions":["gaussian", "uniform"],
+    "k": 10,
+    "possible_distributions":["gaussian", "uniform","gap", "triangular"],
     "mv": true,
     "corr": 0.0,
     "compactness_factor": 0.1,
-    "alpha_n": 1,
-    "outliers": 50,
-    "rotate": true,
+    "alpha_n": 3.5,
+    "outliers": 0,
+    "rotate": false,
+    "scale": true,
+
     "clusters": [
-        {"distributions": "uniform", "corr": 0.5},
+        {"distributions": "gaussian", "corr": 0.0},
         {},
-        {"mv": null, "rotate": false}
+        {"mv": null, "rotate": false},
+        {"distributions": "triangular", "corr": 0.0}
     ]
 }

@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import curses_test
-
 mu = 5.0
 sigma = 0.5
 num_samples = 1000

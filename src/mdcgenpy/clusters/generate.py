@@ -1,8 +1,118 @@
 from __future__ import division
 import math
+import sys
+
 import numpy as np
 import scipy.linalg
 
+
+def delete_one_old_cluster(clus_cfg):
+    # extract keys and probabilities
+    keys, probabilities = zip(*clus_cfg.clusters_live_probability.items())
+    # choose one cluster to delete
+    delete_cluster = np.random.choice(keys, p=probabilities)
+    del clus_cfg.clusters_live_probability[delete_cluster]
+
+
+def apply_dead_factor(clus_cfg):
+    # apply dead factor
+    decrease_prob = 0.2 * clus_cfg.dead_factor  # 0.2 is a magic number, need to be tuned
+    for key, prob in clus_cfg.clusters_live_probability.items():
+        clus_cfg.clusters_live_probability[key] = prob * (1 - decrease_prob)
+
+
+def decrease_old_probabilities(clus_cfg):
+    period_clusters = clus_cfg.n_old_cluster + clus_cfg.n_new_cluster
+    # old_clusters = clus_cfg.clus_cfg.n_old_cluster
+    free_probability = (1 / period_clusters) * clus_cfg.n_new_cluster
+    # reduce all old probabilities by free_probability
+
+    for key, prob in clus_cfg.clusters_live_probability.items():
+        reduce_prob = prob * free_probability
+        clus_cfg.clusters_live_probability[key] = prob - reduce_prob
+
+
+def update_live_clusters(clus_cfg):
+    print("current live probabilities: ", clus_cfg.clusters_live_probability)
+
+    size_live_probability = len(list(clus_cfg.clusters_live_probability.values()))
+    if size_live_probability >= clus_cfg.n_old_cluster + clus_cfg.n_new_cluster:
+        # delete one old cluster
+        delete_one_old_cluster(clus_cfg)
+    else:
+        # normalize new probabilities
+        decrease_old_probabilities(clus_cfg)
+
+    # apply dead factor
+    apply_dead_factor(clus_cfg)
+
+    # add new clusters, choose clus_cfg.n_new_cluster clusters with uniform probability
+    print("new clusters: ", clus_cfg.new_clusters)
+    new_clusters = np.random.choice(clus_cfg.new_clusters, clus_cfg.n_new_cluster, replace=False)
+    probability_used = sum(list(clus_cfg.clusters_live_probability.values()))
+    # remaining probability divided uniformly to new clusters
+    new_clusters_prob = (1 - probability_used) / clus_cfg.n_new_cluster
+    # add new clusters to live probability
+    for cluster in new_clusters:
+        clus_cfg.clusters_live_probability[cluster] = new_clusters_prob
+    # update new clusters, delete assigned clusters
+    indices = np.where(np.in1d(clus_cfg.new_clusters, new_clusters))[0]
+    clus_cfg.new_clusters = np.delete(clus_cfg.new_clusters, indices)
+    print("new clusters array: ", clus_cfg.new_clusters)
+    print("new live probabilities: ", clus_cfg.clusters_live_probability)
+
+    return clus_cfg.clusters_live_probability
+
+
+def compute_current_label(clus_cfg):
+    # extract keys for current live clusters
+    keys_t, _ = zip(*clus_cfg.clusters_live_probability.items())
+    keys = list(keys_t)
+
+    # get mass for current clusters
+    keys_mass = {}
+    sum_mass = 0
+    print("keys: ", keys)
+    for key in keys:
+        keys_mass[key] = clus_cfg.mass[key]
+        sum_mass += clus_cfg.mass[key]
+
+    # compute clusters probability for labels
+    prob = []
+    aux_label = []
+    for key in keys_mass:
+        prob.append(keys_mass[key] / sum_mass)
+        aux_label.append(key)
+    print("prob: ", prob)
+    # compute current label
+    current_label = np.random.choice(aux_label, clus_cfg.n_samples_per_period, p=prob)
+    print("current label: ", current_label)
+    print("current label size: ", len(current_label))
+
+    # compute current label probability
+    current_label_prob = {}
+    for key in keys:
+        current_label_prob[key] = 0
+    for label in current_label:
+        current_label_prob[label] += 1
+
+    print("current label probability: ", current_label_prob)
+    for key in keys:
+        current_label_prob[key] /= clus_cfg.n_samples_per_period
+
+    print("current label probability: ", current_label_prob)
+    return current_label
+
+
+def compute_all_labels(clus_cfg):
+    clus_cfg.labels = np.concatenate((clus_cfg.labels, compute_current_label(clus_cfg)))
+    for i in range(clus_cfg.n_periods - 1):
+        update_live_clusters(clus_cfg)
+        clus_cfg.labels = np.concatenate((clus_cfg.labels, compute_current_label(clus_cfg)))
+        #compute_current_label(clus_cfg)
+        print("---------period: ", i, "-------------------------")
+    print("labels: ", clus_cfg.labels)
+    print("labels size: ", len(clus_cfg.labels))
 
 def generate_mass(clus_cfg):
     """
@@ -85,7 +195,7 @@ def locate_centroids(clus_cfg):
     return centroids, locis, idx
 
 
-def generate_clusters(clus_cfg, batch_size = 0):
+def generate_clusters(clus_cfg, batch_size=0):
     """
     Generate data.
 
@@ -113,7 +223,7 @@ def generate_clusters(clus_cfg, batch_size = 0):
                 aux[k, i] = 2 * cluster.corr * (np.random.beta(beta_param, beta_param) - 0.5)
                 p = aux[k, i]
                 for l in range(k - 1, -1, -1):
-                    p = p * np.sqrt((1 - aux[l, i]**2) * (1 - aux[l, k]**2)) + aux[l, i] * aux[l, k]
+                    p = p * np.sqrt((1 - aux[l, i] ** 2) * (1 - aux[l, k] ** 2)) + aux[l, i] * aux[l, k]
                 corr[k, i] = p
                 corr[i, k] = p
         perm = np.random.permutation(clus_cfg.n_feats)
@@ -156,19 +266,31 @@ def compute_batch(clus_cfg, n_samples):
     """
     # get probabilities of each class
     mass = clus_cfg.mass
+
     mass = np.insert(mass, 0, clus_cfg.outliers)  # class 0 is now the outliers (this changes to -1 further down)
     mass /= mass.sum()
-    #labels = np.arange(clus_cfg.n_clusters)
-    #labels = np.tile(labels, n_samples // clus_cfg.n_clusters)[:n_samples]
 
-    labels = np.random.choice(clus_cfg.n_clusters + 1, n_samples, p=mass) - 1
+    # print(f'mass: {mass}')
+    # labels = np.arange(clus_cfg.n_clusters)
+    # labels = np.tile(labels, n_samples // clus_cfg.n_clusters)[:n_samples]
+
+    labels = clus_cfg.labels # np.random.choice(clus_cfg.n_clusters + 1, n_samples, p=mass) - 1
+
+    # np.set_printoptions(threshold=np.inf)
+    # print(f'labels: {labels}')
+    # print(f'len(labels): {len(labels)}')
     # label -1 corresponds to outliers
     data = np.zeros((n_samples, clus_cfg.n_feats))
 
     # generate samples for each cluster
     for label in range(clus_cfg.n_clusters):
+        print(f'cluster: {label}')
+        print(clus_cfg.k)
+        print(clus_cfg.n_clusters)
+        # print(f'cluster: {label}')
         cluster = clus_cfg.clusters[label]
         indexes = (labels == label)
+        # print(f'indexes: {indexes}')
         samples = sum(indexes)  # nr of samples in this cluster
         data[indexes] = cluster.generate_data(samples)
 
@@ -184,8 +306,6 @@ def compute_batch(clus_cfg, n_samples):
         # add noisy variables
         for d in cluster.n_noise:
             data[indexes, d] = np.random.rand(samples)
-
-
 
     # generate outliers
     indexes = (labels == -1)

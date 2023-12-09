@@ -1,5 +1,5 @@
 {
-    "seed": 1234,
+    "seed": 1224,
     "n_samples": 100000,
     "n_feats": 2,
     "k": 10,
@@ -11,6 +11,12 @@
     "outliers": 0,
     "rotate": false,
     "scale": true,
+
+    "n_samples_per_period": 2000,
+    "n_periods": 9,
+    "n_old_cluster": 2,
+    "n_new_cluster": 1,
+    "dead_factor": 1.0,
 
     "clusters": [
         {"distributions": "gaussian", "corr": 0.0},

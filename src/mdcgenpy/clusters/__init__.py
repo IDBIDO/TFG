@@ -1,3 +1,4 @@
+import sys
 from numbers import Number
 import random
 import math
@@ -11,9 +12,12 @@ class ClusterGenerator(object):
     """
     Structure to handle the input and create clusters according to it.
     """
-    def  __init__(self, seed=1, n_samples=2000, n_feats=2, k=5, min_samples=0, possible_distributions=None,
-                  distributions=None, mv=True, corr=0., compactness_factor=0.1, alpha_n=1,
-                  scale=True, outliers=50, rotate=True, add_noise=0, n_noise=None, ki_coeff=3., **kwargs):
+
+    def __init__(self, seed=1, n_samples=2000, n_feats=2, k=5, min_samples=0, possible_distributions=None,
+                 distributions=None, mv=True, corr=0., compactness_factor=0.1, alpha_n=1,
+                 scale=True, outliers=50, rotate=True, add_noise=0, n_noise=None, ki_coeff=3.,
+                 n_samples_per_period=1000, n_periods=5, n_old_cluster=2, n_new_cluster=1, dead_factor=0.2,
+                 **kwargs):
         """
         Args:
             seed (int): Seed for the generation of random values. Useful for consistency.
@@ -79,10 +83,12 @@ class ClusterGenerator(object):
             ki_coeff (float): Coefficient used to define the default minimum number of samples per cluster.
         """
         self.seed = seed
-        self.n_samples = n_samples
+        self.n_samples = n_periods * n_samples_per_period       # n_samples
         self.n_feats = n_feats
-        self.k = k
-        self.n_clusters = len(k) if type(k) == list else k
+        self.k = n_old_cluster + n_new_cluster*(n_periods - 1)                       # possible clusters = n_old_cluster + n_new_cluster*(n_period-1)
+        self.n_clusters = len(self.k) if type(self.k) == list else self.k
+        print("k: ", self.k)
+        print("n_clusters: ", self.n_clusters)
         self.min_samples = min_samples
         self.possible_distributions = possible_distributions if possible_distributions is not None \
             else ['gaussian', 'uniform']
@@ -99,6 +105,22 @@ class ClusterGenerator(object):
         self.n_noise = n_noise if n_noise is not None else []
         self.ki_coeff = ki_coeff
 
+        self.n_samples_per_period = n_samples_per_period
+        self.n_periods = n_periods
+        self.n_old_cluster = n_old_cluster
+        self.n_new_cluster = n_new_cluster
+
+        self.clusters_live_probability = {}
+        prob = 1 / self.n_old_cluster
+        for i in range(self.n_old_cluster):  # live probability for initial clusters
+            self.clusters_live_probability[i] = prob
+            print(i)
+
+        self.new_clusters = np.arange(2, self.k)  # all the rest are new clusters
+        self.dead_factor = dead_factor
+
+        self.labels = np.empty(0, dtype=int)  # data labels order
+
         random.seed(self.seed)
 
         for key, val in kwargs.items():
@@ -114,8 +136,18 @@ class ClusterGenerator(object):
         self._idx = None
 
     def generate_data(self, batch_size=0):
+        # print(1)
+        # generate.update_live_clusters(self)
+        # print(2)
+        # generate.update_live_clusters(self)
+        # print("number of clusters: ", self.k)
         np.random.seed(self.seed)
         self._mass = generate.generate_mass(self)
+        # generate.compute_current_label(self)
+        generate.compute_all_labels(self)
+        print("----------------------------------------------")
+        print(self.mass)
+        print(self._mass)
         self._centroids, self._locis, self._idx = generate.locate_centroids(self)
         batches = generate.generate_clusters(self, batch_size)
         if batch_size == 0:  # if batch_size == 0, just return the data instead of the generator
@@ -139,7 +171,7 @@ class ClusterGenerator(object):
             else:
                 if sum(self.k) != self.n_samples:
                     raise ValueError('Total number of points must be the same as the sum of points in each cluster!')
-
+        print("n_clusters---------: ", self.n_clusters)
         if self.distributions is not None:
             # check validity of self.distributions, and turning it into a (n_clusters, n_feats) matrix
             if hasattr(self.distributions, '__iter__') and not type(self.distributions) == str:
@@ -147,7 +179,8 @@ class ClusterGenerator(object):
                     raise ValueError('There must be exactly one distribution input for each cluster!')
                 if hasattr(self.distributions[0], '__iter__'):
                     if not all(hasattr(elem, '__iter__') and len(elem) == self.n_feats for elem in self.distributions):
-                        raise ValueError('Invalid distributions input! Input must have dimensions (n_clusters, n_feats).')
+                        raise ValueError(
+                            'Invalid distributions input! Input must have dimensions (n_clusters, n_feats).')
             else:
                 self.distributions = [self.distributions] * self.n_clusters
             self._distributions = dist.check_input(self.distributions)
@@ -165,7 +198,6 @@ class ClusterGenerator(object):
             else:
                 self.mv = [self.mv] * self.n_clusters
         assert all(_validate_mv(elem) for elem in self.mv)
-
 
         # check validity of self.scale, and turn it into a list with self.n_clusters elements
         if hasattr(self.scale, '__iter__'):
@@ -264,7 +296,7 @@ class Cluster(object):
         if hasattr(self.distributions, '__iter__'):
             out = np.zeros((samples, self.cfg.n_feats))
             for f in range(self.cfg.n_feats):
-                out[:,f] = self.distributions[f](samples, self.mv, self.compactness_factor)
+                out[:, f] = self.distributions[f](samples, self.mv, self.compactness_factor)
             return out
         else:
             return self.distributions((samples, self.cfg.n_feats), self.mv, self.compactness_factor)
@@ -348,6 +380,7 @@ class ScheduledClusterGenerator(ClusterGenerator):
     A time step is defined as one get call to ``self.mass``, which is done when generating each new batch.
     That is, one time step is one call to :func:`.generate.compute_batch`.
     """
+
     def __init__(self, schedule, *args, **kwargs):
         """
         Args:

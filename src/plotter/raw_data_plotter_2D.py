@@ -47,7 +47,7 @@ class RawDataPlotter2D:
         plt.title('Scatter Plot of Attribute1 vs. Attribute2')
 
         # Display the plot
-        plt.legend()
+        #plt.legend()
         plt.grid(True)
         plt.show()
 

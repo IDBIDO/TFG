@@ -170,6 +170,8 @@ def locate_centroids(clus_cfg):
     p = 1.
     idx = 1
     for i, c in enumerate(clus_cfg._cmax):
+        print(clus_cfg._cmax)
+        print(i, c)
         p *= c
         if p > 2 * clus_cfg.n_clusters + clus_cfg.outliers / clus_cfg.n_clusters:
             idx = i
@@ -177,18 +179,25 @@ def locate_centroids(clus_cfg):
     idx += 1
 
     locis = np.arange(p)
+    print("locis: ", locis)
     np.random.shuffle(locis)
     clin = locis[:clus_cfg.n_clusters]
 
     # voodoo magic for obtaining centroids
     res = clin
+    print("res: ", res)
     for j in range(idx):
         center = ((res % clus_cfg._cmax[j]) + 1) / (clus_cfg._cmax[j] + 1)
+        print("0000000000000000000000000000000000000000000000000000000000000000000000000000000")
+        print(center)
         noise = (np.random.rand(clus_cfg.n_clusters) - 0.5) * clus_cfg.compactness_factor
         centroids[:, j] = center + noise
         res = np.floor(res / clus_cfg._cmax[j])
     for j in range(idx, clus_cfg.n_feats):
+
         center = np.floor(clus_cfg._cmax[j] * np.random.rand(clus_cfg.n_clusters) + 1) / (clus_cfg._cmax[j] + 1)
+        print("111111111111111111111111111111111111111111111111111111111111111111111111111111")
+        print(center)
         noise = (np.random.rand(clus_cfg.n_clusters) - 0.5) * clus_cfg.compactness_factor
         centroids[:, j] = center + noise
 

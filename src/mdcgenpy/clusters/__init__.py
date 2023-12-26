@@ -141,6 +141,7 @@ class ClusterGenerator(object):
         # print(2)
         # generate.update_live_clusters(self)
         # print("number of clusters: ", self.k)
+        print("cmax--------------------------------------: ", self._cmax)
         np.random.seed(self.seed)
         self._mass = generate.generate_mass(self)
         # generate.compute_current_label(self)
@@ -226,8 +227,11 @@ class ClusterGenerator(object):
         # set self._cmax
         self._cmax = [math.floor(1 + self.n_clusters / math.log(self.n_clusters))] * self.n_feats \
             if self.n_clusters > 1 else [1 + 2 * (self.outliers > 1)] * self.n_feats
+        print("self._cmax: ", self._cmax)
         self._cmax = [round(-a) if a < 0 else round(c * a) for a, c in zip(self.alpha_n, self._cmax)]
+        print("self._cmax: ", self._cmax)
         self._cmax = np.array(self._cmax)
+        print("self._cmax: ", self._cmax)
 
         # check validity of self.compactness_factor, and turn it into a list with self.n_clusters elements
         if hasattr(self.compactness_factor, '__iter__'):

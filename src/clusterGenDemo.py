@@ -7,7 +7,7 @@ from src.plotter.raw_data_plotter_2D import RawDataPlotter2D
 from src.utils import get_project_root
 
 # Initialize cluster generator (all parameters are optional)
-cluster_gen = mdcgenpy.clusters.ClusterGenerator()
+#cluster_gen = mdcgenpy.clusters.ClusterGenerator()
 
 # Get tuple with a numpy array with samples and another with labels
 #data = cluster_gen.generate_data()
@@ -31,6 +31,10 @@ data1 = configGen.generate_data()
 
 # Save the data to the CSV file
 mdcgenpy.mdcgenutils.save_csv(data1, "float_data.csv")
+mdcgenpy.mdcgenutils.save_mat(data1, "float_data.mat")
+# transform .csv to .mat
+
+
 
 root = get_project_root()
 a = RawDataPlotter2D("float_data.csv")

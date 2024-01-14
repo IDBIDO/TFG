@@ -110,9 +110,9 @@ def compute_all_labels(clus_cfg):
         update_live_clusters(clus_cfg)
         clus_cfg.labels = np.concatenate((clus_cfg.labels, compute_current_label(clus_cfg)))
         #compute_current_label(clus_cfg)
-        print("---------period: ", i, "-------------------------")
-    print("labels: ", clus_cfg.labels)
-    print("labels size: ", len(clus_cfg.labels))
+        #print("---------period: ", i, "-------------------------")
+    #print("labels: ", clus_cfg.labels)
+    #print("labels size: ", len(clus_cfg.labels))
 
 def generate_mass(clus_cfg):
     """
@@ -188,16 +188,12 @@ def locate_centroids(clus_cfg):
     print("res: ", res)
     for j in range(idx):
         center = ((res % clus_cfg._cmax[j]) + 1) / (clus_cfg._cmax[j] + 1)
-        print("0000000000000000000000000000000000000000000000000000000000000000000000000000000")
-        print(center)
         noise = (np.random.rand(clus_cfg.n_clusters) - 0.5) * clus_cfg.compactness_factor
         centroids[:, j] = center + noise
         res = np.floor(res / clus_cfg._cmax[j])
     for j in range(idx, clus_cfg.n_feats):
 
         center = np.floor(clus_cfg._cmax[j] * np.random.rand(clus_cfg.n_clusters) + 1) / (clus_cfg._cmax[j] + 1)
-        print("111111111111111111111111111111111111111111111111111111111111111111111111111111")
-        print(center)
         noise = (np.random.rand(clus_cfg.n_clusters) - 0.5) * clus_cfg.compactness_factor
         centroids[:, j] = center + noise
 

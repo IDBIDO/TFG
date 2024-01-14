@@ -70,8 +70,8 @@ class RawDataPlotter2D:
             print(i*n)
             current_y = self.gety()[i*n:i*n+n]
             axes[i // 3, i % 3].scatter(current_x, current_y, marker='.')
-            axes[i // 3, i % 3].set_title(f'Group {i}')
-            print(f'Group {i}: {current_x}, {current_y}')
+            axes[i // 3, i % 3].set_title(f'Period {i}')
+            print(f'Period {i}: {current_x}, {current_y}')
         plt.show()
 
     def generate_special_plots(self, n, save_path="special_plots.png"):
@@ -95,7 +95,7 @@ class RawDataPlotter2D:
             y_subset = self.gety()[i:i+n]
             labels_subset = self.get_label()[i:i+n]
             colors = ['red' if label == -1 else 'blue' for label in labels_subset]
-            ax.scatter(x_subset, y_subset, label=f'Group {i // n}', color=colors, marker='.')
+            ax.scatter(x_subset, y_subset, label=f'Period {i // n}', color=colors, marker='.')
             ax.set_title(f'Group {i // n}')
 
         # Hide empty subplots

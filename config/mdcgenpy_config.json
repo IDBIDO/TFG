@@ -3,7 +3,7 @@
     "n_samples": 100000,
     "n_feats": 2,
     "k": 10,
-    "possible_distributions":["gaussian", "uniform","gap", "triangular"],
+    "possible_distributions":["gaussian"],
     "mv": true,
     "corr": 0.0,
     "compactness_factor": 0.1,
@@ -19,9 +19,6 @@
     "dead_factor": 1.0,
 
     "clusters": [
-        {"distributions": "gaussian", "corr": 0.0},
-        {},
-        {"mv": null, "rotate": false},
-        {"distributions": "triangular", "corr": 0.0}
+
     ]
 }

@@ -35,8 +35,10 @@ mdcgenpy.mdcgenutils.save_mat(data1, "float_data.mat")
 # transform .csv to .mat
 
 
-
 root = get_project_root()
 a = RawDataPlotter2D("float_data.csv")
 
-a.plot()
+# Plot the data if it is 2 dimensional
+if configGen.n_feats == 2:
+    a.plot()
+

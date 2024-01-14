@@ -71,14 +71,11 @@ python3 plot2.py
 
 ## Contact
 
-Provide your contact information or the way users can get help with your project.
 
 ## License
 
-If applicable, specify the license under which your project is released.
 
 ---
 
-Make sure to replace placeholders like `[your_TFG_path]` with actual paths or values relevant to your project. This structured README should provide a clear guide to anyone who wants to understand or contribute to your project.
 
  

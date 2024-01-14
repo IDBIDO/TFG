@@ -1,7 +1,7 @@
 # TFG
 
 
-
+## pip install -r requirements.txt
  ## export PYTHONPATH=/home/he/Desktop/TFG:$PYTHONPATH 
   ## echo $PYTHONPATH  
   ## pwd 

@@ -4,10 +4,6 @@
 
 This repository is dedicated to the Final Degree Project titled "HERRAMIENTAS Y BANCO DE PRUEBAS PARA LA DETECCIÓN DE ANOMALÍAS EN FLUJOS DE DATOS" (Tools and benchmark for Anomaly Detection in Data Streams).
 
-## Project Overview
-
-Provide a brief introduction to your project. Explain the problem it solves, its objectives, and the methodology or technologies used.
-
 ## Repository Structure
 
 Here's an overview of the key files included in this repository:

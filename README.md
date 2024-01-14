@@ -13,6 +13,7 @@ Here's an overview of the key files included in this repository:
 - `src/plotter/raw_data_plotter_2D.py`: Script for plotting raw data (periodic plots in 2D).
 - `src/plotter/plot1.py`: Script for plotting experiment results.
 - `src/plotter/plot2.py`: Another script for plotting experiment results.
+- `data`: Directory containing the data set for experiments. 
 
 ## Data Generation Configuration
 
@@ -52,7 +53,8 @@ cd src
 python3 clusterGenDemo.py
 ```
 For example, my [TFG_file_path] is `/home/he/Desktop/TFG` 
-
+The resulting data will be stored in the `data` directory with name 'float_data.csv' and 'float_data.mat'.
+Each executing of the script will overwrite the previous data, so make sure to rename the data files if you want to keep them.
 
 ### Data Plotting
 
@@ -64,12 +66,6 @@ python3 raw_data_plotter_2D.py
 python3 plot1.py
 python3 plot2.py
 ```
-
-## Contact
-
-
-## License
-
 
 ---
 

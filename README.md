@@ -75,7 +75,7 @@ The original repository of SENCForest is available on GitHub: https://github.com
 To run a SENCForest experiment, open Matlab and follow these steps:
 
 1. **Choose a Dataset**:
-   - Select a dataset from the `data` directory (`.mat` file format). The characteristics of the dataset are described in the project's documentation.
+   - Select a dataset from the `data` directory (`.mat` file format). Load the dataset by double-clicking on it or by using the `load` command in the Matlab command window.
 
 2. **Prepare Matlab Environment**:
    - Open Matlab and navigate to the `SENCForest` directory.

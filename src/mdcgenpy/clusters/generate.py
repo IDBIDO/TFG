@@ -33,7 +33,7 @@ def decrease_old_probabilities(clus_cfg):
 
 
 def update_live_clusters(clus_cfg):
-    print("current live probabilities: ", clus_cfg.clusters_live_probability)
+    #print("current live probabilities: ", clus_cfg.clusters_live_probability)
 
     size_live_probability = len(list(clus_cfg.clusters_live_probability.values()))
     if size_live_probability >= clus_cfg.n_old_cluster + clus_cfg.n_new_cluster:
@@ -47,7 +47,7 @@ def update_live_clusters(clus_cfg):
     apply_dead_factor(clus_cfg)
 
     # add new clusters, choose clus_cfg.n_new_cluster clusters with uniform probability
-    print("new clusters: ", clus_cfg.new_clusters)
+    #print("new clusters: ", clus_cfg.new_clusters)
     new_clusters = np.random.choice(clus_cfg.new_clusters, clus_cfg.n_new_cluster, replace=False)
     probability_used = sum(list(clus_cfg.clusters_live_probability.values()))
     # remaining probability divided uniformly to new clusters
@@ -58,8 +58,7 @@ def update_live_clusters(clus_cfg):
     # update new clusters, delete assigned clusters
     indices = np.where(np.in1d(clus_cfg.new_clusters, new_clusters))[0]
     clus_cfg.new_clusters = np.delete(clus_cfg.new_clusters, indices)
-    print("new clusters array: ", clus_cfg.new_clusters)
-    print("new live probabilities: ", clus_cfg.clusters_live_probability)
+
 
     return clus_cfg.clusters_live_probability
 
@@ -72,7 +71,7 @@ def compute_current_label(clus_cfg):
     # get mass for current clusters
     keys_mass = {}
     sum_mass = 0
-    print("keys: ", keys)
+
     for key in keys:
         keys_mass[key] = clus_cfg.mass[key]
         sum_mass += clus_cfg.mass[key]
@@ -83,11 +82,10 @@ def compute_current_label(clus_cfg):
     for key in keys_mass:
         prob.append(keys_mass[key] / sum_mass)
         aux_label.append(key)
-    print("prob: ", prob)
+
     # compute current label
     current_label = np.random.choice(aux_label, clus_cfg.n_samples_per_period, p=prob)
-    print("current label: ", current_label)
-    print("current label size: ", len(current_label))
+
 
     # compute current label probability
     current_label_prob = {}
@@ -96,11 +94,11 @@ def compute_current_label(clus_cfg):
     for label in current_label:
         current_label_prob[label] += 1
 
-    print("current label probability: ", current_label_prob)
+    #print("current label probability: ", current_label_prob)
     for key in keys:
         current_label_prob[key] /= clus_cfg.n_samples_per_period
 
-    print("current label probability: ", current_label_prob)
+    #print("current label probability: ", current_label_prob)
     return current_label
 
 
@@ -170,8 +168,8 @@ def locate_centroids(clus_cfg):
     p = 1.
     idx = 1
     for i, c in enumerate(clus_cfg._cmax):
-        print(clus_cfg._cmax)
-        print(i, c)
+        #print(clus_cfg._cmax)
+        #print(i, c)
         p *= c
         if p > 2 * clus_cfg.n_clusters + clus_cfg.outliers / clus_cfg.n_clusters:
             idx = i
@@ -179,13 +177,13 @@ def locate_centroids(clus_cfg):
     idx += 1
 
     locis = np.arange(p)
-    print("locis: ", locis)
+
     np.random.shuffle(locis)
     clin = locis[:clus_cfg.n_clusters]
 
     # voodoo magic for obtaining centroids
     res = clin
-    print("res: ", res)
+
     for j in range(idx):
         center = ((res % clus_cfg._cmax[j]) + 1) / (clus_cfg._cmax[j] + 1)
         noise = (np.random.rand(clus_cfg.n_clusters) - 0.5) * clus_cfg.compactness_factor
@@ -242,7 +240,7 @@ def generate_clusters(clus_cfg, batch_size=0):
 
     if batch_size == 0:
         batch_size = clus_cfg.n_samples
-    print(f'batch_size: {batch_size}')
+    #print(f'batch_size: {batch_size}')
     for batch in range(((clus_cfg.n_samples - 1) // batch_size) + 1):
         n_samples = min(batch_size, clus_cfg.n_samples - batch * batch_size)
         data, labels = compute_batch(clus_cfg, n_samples)
@@ -289,9 +287,7 @@ def compute_batch(clus_cfg, n_samples):
 
     # generate samples for each cluster
     for label in range(clus_cfg.n_clusters):
-        print(f'cluster: {label}')
-        print(clus_cfg.k)
-        print(clus_cfg.n_clusters)
+
         # print(f'cluster: {label}')
         cluster = clus_cfg.clusters[label]
         indexes = (labels == label)

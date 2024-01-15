@@ -87,8 +87,8 @@ class ClusterGenerator(object):
         self.n_feats = n_feats
         self.k = n_old_cluster + n_new_cluster*(n_periods - 1)                       # possible clusters = n_old_cluster + n_new_cluster*(n_period-1)
         self.n_clusters = len(self.k) if type(self.k) == list else self.k
-        print("k: ", self.k)
-        print("n_clusters: ", self.n_clusters)
+        #print("k: ", self.k)
+        #print("n_clusters: ", self.n_clusters)
         self.min_samples = min_samples
         self.possible_distributions = possible_distributions if possible_distributions is not None \
             else ['gaussian', 'uniform']
@@ -114,7 +114,7 @@ class ClusterGenerator(object):
         prob = 1 / self.n_old_cluster
         for i in range(self.n_old_cluster):  # live probability for initial clusters
             self.clusters_live_probability[i] = prob
-            print(i)
+            #print(i)
 
         self.new_clusters = np.arange(2, self.k)  # all the rest are new clusters
         self.dead_factor = dead_factor
@@ -136,19 +136,12 @@ class ClusterGenerator(object):
         self._idx = None
 
     def generate_data(self, batch_size=0):
-        # print(1)
-        # generate.update_live_clusters(self)
-        # print(2)
-        # generate.update_live_clusters(self)
-        # print("number of clusters: ", self.k)
-        print("cmax--------------------------------------: ", self._cmax)
+
         np.random.seed(self.seed)
         self._mass = generate.generate_mass(self)
         # generate.compute_current_label(self)
         generate.compute_all_labels(self)
-        print("----------------------------------------------")
-        print(self.mass)
-        print(self._mass)
+
         self._centroids, self._locis, self._idx = generate.locate_centroids(self)
         batches = generate.generate_clusters(self, batch_size)
         if batch_size == 0:  # if batch_size == 0, just return the data instead of the generator
@@ -172,7 +165,7 @@ class ClusterGenerator(object):
             else:
                 if sum(self.k) != self.n_samples:
                     raise ValueError('Total number of points must be the same as the sum of points in each cluster!')
-        print("n_clusters---------: ", self.n_clusters)
+        #print("n_clusters---------: ", self.n_clusters)
         if self.distributions is not None:
             # check validity of self.distributions, and turning it into a (n_clusters, n_feats) matrix
             if hasattr(self.distributions, '__iter__') and not type(self.distributions) == str:
@@ -227,11 +220,11 @@ class ClusterGenerator(object):
         # set self._cmax
         self._cmax = [math.floor(1 + self.n_clusters / math.log(self.n_clusters))] * self.n_feats \
             if self.n_clusters > 1 else [1 + 2 * (self.outliers > 1)] * self.n_feats
-        print("self._cmax: ", self._cmax)
+        #print("self._cmax: ", self._cmax)
         self._cmax = [round(-a) if a < 0 else round(c * a) for a, c in zip(self.alpha_n, self._cmax)]
-        print("self._cmax: ", self._cmax)
+        #print("self._cmax: ", self._cmax)
         self._cmax = np.array(self._cmax)
-        print("self._cmax: ", self._cmax)
+        #print("self._cmax: ", self._cmax)
 
         # check validity of self.compactness_factor, and turn it into a list with self.n_clusters elements
         if hasattr(self.compactness_factor, '__iter__'):

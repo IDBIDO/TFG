@@ -3,6 +3,7 @@
 # TFG (Final Degree Project)
 
 This repository is dedicated to the Final Degree Project titled "HERRAMIENTAS Y BANCO DE PRUEBAS PARA LA DETECCIÓN DE ANOMALÍAS EN FLUJOS DE DATOS" (Tools and benchmark for Anomaly Detection in Data Streams).
+Project final grade: 9.5/10.
 
 ## Repository Structure
 
